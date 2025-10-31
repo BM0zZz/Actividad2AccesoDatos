@@ -1,64 +1,86 @@
 package com.example.model;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
- * Clase modelo de Producto que representa una entidad 'products'.
+ * Modelo de Producto con ID inmutable (lo asigna la BD).
+ * Validaciones: name/category no vacíos, price >= 0, stock >= 0.
  */
 public class Product {
-    private int id;
+    private final int id;               // 0 si no está persistido aún; inmutable
     private String name;
     private BigDecimal price;
     private int stock;
     private String category;
     private String description;
 
-    // Constructor por defecto
-    public Product() {}
-
-    // Constructor sin ID (para crear nuevos productos)
-    public Product(String name, BigDecimal price, int stock, String category, String description) {
-        this.name = name;
-        this.price = price;
-        this.stock = stock;
-        this.category = category;
-        this.description = description;
+    // Alta (sin id, stock arranca a 0 por diseño)
+    public Product(String name, BigDecimal price, String category, String description) {
+        this(0, name, price, 0, category, description);
     }
 
-    // Constructor con ID (para productos existentes)
+    // Existente (con id asignado por la BD)
     public Product(int id, String name, BigDecimal price, int stock, String category, String description) {
-        this(name, price, stock, category, description);
+        if (id < 0) throw new IllegalArgumentException("id inválido");
         this.id = id;
+        setName(name);
+        setPrice(price);
+        setStock(stock);
+        setCategory(category);
+        setDescription(description);
     }
 
-    // Getters y Setters
+    // Getters (sin setter de id)
     public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
     public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
-
     public int getStock() { return stock; }
-    public void setStock(int stock) { this.stock = stock; }
-
     public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
-
     public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+
+    // Setters con validación
+    public void setName(String name) {
+        if (name == null || name.isBlank()) throw new IllegalArgumentException("name obligatorio");
+        this.name = name.trim();
+    }
+
+    public void setPrice(BigDecimal price) {
+        Objects.requireNonNull(price, "precio obligatorio");
+        if (price.signum() < 0) throw new IllegalArgumentException("price no puede ser negativo");
+        this.price = price;
+    }
+
+    public void setStock(int stock) {
+        if (stock < 0) throw new IllegalArgumentException("stock no puede ser negativo");
+        this.stock = stock;
+    }
+
+    public void setCategory(String category) {
+        if (category == null || category.isBlank()) throw new IllegalArgumentException("category obligatoria");
+        this.category = category.trim();
+    }
+
+    public void setDescription(String description) {
+        this.description = (description == null) ? "" : description.trim();
+    }
+
+
+    public void increaseStock(int units) {
+        if (units <= 0) throw new IllegalArgumentException("unidades > 0");
+        this.stock += units;
+    }
+    public void decreaseStock(int units) {
+        if (units <= 0) throw new IllegalArgumentException("unidades > 0");
+        if (units > this.stock) throw new IllegalArgumentException("no hay stock suficiente");
+        this.stock -= units;
+    }
 
     @Override
     public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                ", stock=" + stock +
+        return "Product{id=" + id + ", name='" + name + '\'' +
+                ", price=" + price + ", stock=" + stock +
                 ", category='" + category + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+                ", description='" + description + '\'' + '}';
     }
 }
