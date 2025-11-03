@@ -3,24 +3,20 @@ package com.example.model;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-/**
- * Modelo de Producto con ID inmutable (lo asigna la BD).
- * Validaciones: name/category no vacíos, price >= 0, stock >= 0.
- */
 public class Product {
-    private final int id;               // 0 si no está persistido aún; inmutable
+    private final int id;               
     private String name;
     private BigDecimal price;
     private int stock;
     private String category;
     private String description;
 
-    // Alta (sin id, stock arranca a 0 por diseño)
+    
     public Product(String name, BigDecimal price, String category, String description) {
         this(0, name, price, 0, category, description);
     }
 
-    // Existente (con id asignado por la BD)
+    
     public Product(int id, String name, BigDecimal price, int stock, String category, String description) {
         if (id < 0) throw new IllegalArgumentException("id inválido");
         this.id = id;
@@ -31,7 +27,7 @@ public class Product {
         setDescription(description);
     }
 
-    // Getters (sin setter de id)
+    
     public int getId() { return id; }
     public String getName() { return name; }
     public BigDecimal getPrice() { return price; }
@@ -39,7 +35,7 @@ public class Product {
     public String getCategory() { return category; }
     public String getDescription() { return description; }
 
-    // Setters con validación
+    
     public void setName(String name) {
         if (name == null || name.isBlank()) throw new IllegalArgumentException("name obligatorio");
         this.name = name.trim();
