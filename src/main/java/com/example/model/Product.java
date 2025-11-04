@@ -1,7 +1,7 @@
 package com.example.model;
 
 public class Product {
-    private final int id;   // 0 si no está persistido aún; inmutable
+    private final int id;
     private String name;
     private double price;
     private int stock;

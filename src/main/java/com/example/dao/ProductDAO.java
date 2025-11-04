@@ -101,7 +101,7 @@ public class ProductDAO {
         }
     }
 
-    /** Mapeo ResultSet -> Product */
+
     private Product map(ResultSet rs) throws SQLException {
         return new Product(
                 rs.getInt("id"),
