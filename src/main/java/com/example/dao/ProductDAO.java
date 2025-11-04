@@ -7,10 +7,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class ProductDAO {
 
-
+    /** CREATE */
     public Product addProduct(Product product) throws SQLException {
         String sql = "INSERT INTO products (name, price, stock, category, description) VALUES (?, ?, ?, ?, ?)";
 
@@ -18,7 +17,7 @@ public class ProductDAO {
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, product.getName());
-            ps.setBigDecimal(2, product.getPrice());
+            ps.setDouble(2, product.getPrice());   // <-- double
             ps.setInt(3, product.getStock());
             ps.setString(4, product.getCategory());
             ps.setString(5, product.getDescription());
@@ -29,11 +28,10 @@ public class ProductDAO {
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     int id = rs.getInt(1);
-
                     return new Product(
                             id,
                             product.getName(),
-                            product.getPrice(),
+                            product.getPrice(),   // double
                             product.getStock(),
                             product.getCategory(),
                             product.getDescription()
@@ -44,7 +42,7 @@ public class ProductDAO {
         }
     }
 
-
+    /** READ by id */
     public Product getProductById(int id) throws SQLException {
         String sql = "SELECT * FROM products WHERE id = ?";
 
@@ -82,7 +80,7 @@ public class ProductDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, p.getName());
-            ps.setBigDecimal(2, p.getPrice());
+            ps.setDouble(2, p.getPrice());   // <-- double
             ps.setInt(3, p.getStock());
             ps.setString(4, p.getCategory());
             ps.setString(5, p.getDescription());
@@ -103,12 +101,12 @@ public class ProductDAO {
         }
     }
 
-
+    /** Mapeo ResultSet -> Product */
     private Product map(ResultSet rs) throws SQLException {
         return new Product(
                 rs.getInt("id"),
                 rs.getString("name"),
-                rs.getBigDecimal("price"),
+                rs.getDouble("price"),     // <-- double
                 rs.getInt("stock"),
                 rs.getString("category"),
                 rs.getString("description")
